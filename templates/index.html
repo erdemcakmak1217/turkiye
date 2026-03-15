@@ -4,8 +4,7 @@
 <head>
 
 <meta charset="UTF-8">
-
-<title>Son Türkiye Haritası</title>
+<title>Türkiye Haritası</title>
 
 <style>
 
@@ -14,6 +13,26 @@ font-family:Arial;
 text-align:center;
 }
 
+/* sayfa düzeni */
+
+#container{
+display:flex;
+justify-content:center;
+gap:40px;
+align-items:flex-start;
+}
+
+/* sol panel */
+
+#panel{
+width:300px;
+padding:15px;
+text-align:left;
+min-height:200px;
+}
+
+/* harita */
+
 svg{
 width:900px;
 }
@@ -21,45 +40,68 @@ width:900px;
 /* iller */
 
 path{
-    fill:#d9d9d9;
-    stroke:white;
-    stroke-width:1;
-    cursor:pointer;
-    transition:0.2s;
-    transform-box: fill-box;
-    transform-origin: center;
+fill:#d9d9d9;
+stroke:white;
+stroke-width:1;
+cursor:pointer;
+transition:0.2s;
+transform-box: fill-box;
+transform-origin: center;
+}
+
+/* hover */
+
+path:hover{
+fill:aqua;
+}
+
+/* seçilen il */
+
+.selected{
+fill:red !important;
+animation: buyu 0.4s ease;
+filter: drop-shadow(0px 0px 4px black);
+}
+
+/* büyüme animasyonu */
+
+@keyframes buyu{
+
+0%{
+transform:scale(1);
+}
+
+50%{
+transform:scale(1.05);
+}
+
+100%{
+transform:scale(1);
+}
+
+}
+#loading{
+    display:none;
+    font-size:40px;
+    letter-spacing:8px;
     }
     
-    /* hover */
-    
-    path:hover{
-    fill:aqua;
+    .dot{
+    animation: blink 1.4s infinite;
     }
     
-    /* seçilen il */
-    
-    .selected{
-    fill:red !important;
-    animation: buyu 0.4s ease;
-    filter: drop-shadow(0px 0px 4px black);
+    .dot:nth-child(2){
+    animation-delay:0.2s;
     }
     
-    /* büyümeLER animasyonu */
-    
-    @keyframes buyu{
-    
-    0%{
-    transform:scale(1);
+    .dot:nth-child(3){
+    animation-delay:0.4s;
     }
     
-    50%{
-    transform:scale(1.05);
-    }
-    
-    100%{
-    transform:scale(1);
-    }
-    
+    @keyframes blink{
+    0%{opacity:0.2;}
+    50%{opacity:1;}
+    100%{opacity:0.2;}
     }
 
 </style>
@@ -68,9 +110,31 @@ path{
 
 <body>
 
-<h2>Türkiye Haritası</h2>
+
+
+<div id="container">
+
+<!-- SOL PANEL -->
+
+<div id="panel">
+
+<h3>İl Bilgisi</h3>
+<div id="loading">
+    <span class="dot">•</span>
+    <span class="dot">•</span>
+    <span class="dot">•</span>
+    </div>
+<div id="bilgi">
+Bir il seçiniz
+</div>
+
+</div>
+
+<!-- HARİTA -->
 
 <div id="harita">
+    <h2>Türkiye Haritası</h2>
+
 
     <svg baseprofile="tiny" fill="#6f9c76" height="422" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5" version="1.2" viewbox="0 0 1000 422" width="1000" xmlns="http://www.w3.org/2000/svg">
         <g id="features">
@@ -414,23 +478,50 @@ path{
 
 </div>
 
-<div id="bilgi">
-Seçilen İl: -
-</div>
+
 
 <script>
 
-let iller=document.querySelectorAll("path");
+    let iller=document.querySelectorAll("path");
 
 iller.forEach(function(il){
 
-il.addEventListener("click",function(){
+il.addEventListener("click",async function(){
 
 iller.forEach(i=>i.classList.remove("selected"));
 
 this.classList.add("selected");
 
-document.getElementById("bilgi").innerText="Seçilen İl: "+this.id;
+let ilAdi=this.id;
+
+document.getElementById("bilgi").innerHTML = `
+<span class="loading">
+  <span>•</span><span>•</span><span>•</span>
+</span>
+`;
+
+let url="https://tr.wikipedia.org/api/rest_v1/page/summary/"+ilAdi;
+
+try{
+
+let response=await fetch(url);
+let data=await response.json();
+
+document.getElementById("bilgi").innerHTML=`
+
+<h3>${ilAdi}</h3>
+
+<p>${data.extract}</p>
+
+`;
+
+}
+
+catch{
+
+document.getElementById("bilgi").innerHTML="Bilgi alınamadı.";
+
+}
 
 });
 
