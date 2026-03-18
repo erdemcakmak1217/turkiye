@@ -13,7 +13,7 @@ font-family:Arial;
 text-align:center;
 }
 
-/* sayfa düzeni */
+/* layout */
 
 #container{
 display:flex;
@@ -31,7 +31,15 @@ text-align:left;
 min-height:200px;
 }
 
-/* harita */
+/* HARİTA KUTUSU */
+
+#mapContainer{
+position:relative;
+width:900px;
+overflow:hidden;
+}
+
+/* svg */
 
 svg{
 width:900px;
@@ -55,7 +63,7 @@ path:hover{
 fill:aqua;
 }
 
-/* seçilen il */
+/* seçilen */
 
 .selected{
 fill:red !important;
@@ -63,54 +71,88 @@ animation: buyu 0.4s ease;
 filter: drop-shadow(0px 0px 4px black);
 }
 
-/* büyüme animasyonu */
-
 @keyframes buyu{
-
-0%{
-transform:scale(1);
+0%{transform:scale(1);}
+50%{transform:scale(1.05);}
+100%{transform:scale(1);}
 }
 
-50%{
-transform:scale(1.05);
-}
+/* loading */
 
-100%{
-transform:scale(1);
-}
-
-}
 #loading{
-    display:none;
-    font-size:40px;
-    letter-spacing:8px;
-    }
-    
-    .dot{
-    animation: blink 1.4s infinite;
-    }
-    
-    .dot:nth-child(2){
-    animation-delay:0.2s;
-    }
-    
-    .dot:nth-child(3){
-    animation-delay:0.4s;
-    }
-    
-    @keyframes blink{
-    0%{opacity:0.2;}
-    50%{opacity:1;}
-    100%{opacity:0.2;}
-    }
+display:none;
+font-size:40px;
+letter-spacing:8px;
+}
 
+.dot{
+animation: blink 1.4s infinite;
+}
+
+.dot:nth-child(2){animation-delay:0.2s;}
+.dot:nth-child(3){animation-delay:0.4s;}
+
+@keyframes blink{
+0%{opacity:0.2;}
+50%{opacity:1;}
+100%{opacity:0.2;}
+}
+
+/* zoom butonları */
+
+#controls{
+position:absolute;
+right:10px;
+bottom:10px;
+display:flex;
+flex-direction:column;
+gap:5px;
+}
+
+#controls button{
+width:40px;
+height:40px;
+font-size:20px;
+cursor:pointer;
+}
+
+/* ölçek */
+
+#scale{
+position:absolute;
+left:10px;
+bottom:10px;
+background:white;
+padding:5px 10px;
+font-size:14px;
+}
+#mapContainer{
+    position:relative;
+    width:900px;
+    height:600px;
+    margin:auto;
+    border:2px black;   /* ÇERÇEVE FIX */
+    overflow:hidden;
+}
+
+#harita{
+    width:100%;
+    height:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    transform-origin:center;
+    transition: transform 0.3s ease;
+}
+
+svg{
+    width:900px;
+}
 </style>
 
 </head>
 
 <body>
-
-
 
 <div id="container">
 
@@ -119,11 +161,13 @@ transform:scale(1);
 <div id="panel">
 
 <h3>İl Bilgisi</h3>
+
 <div id="loading">
-    <span class="dot">•</span>
-    <span class="dot">•</span>
-    <span class="dot">•</span>
-    </div>
+<span class="dot">•</span>
+<span class="dot">•</span>
+<span class="dot">•</span>
+</div>
+
 <div id="bilgi">
 Bir il seçiniz
 </div>
@@ -132,9 +176,19 @@ Bir il seçiniz
 
 <!-- HARİTA -->
 
-<div id="harita">
-    <h2>Türkiye Haritası</h2>
-
+       <div id="mapContainer">
+        <h2>Türkiye Haritası</h2>
+        <div id="ui">
+            <div id="scale">1 / 1.000.000</div>
+    
+            <div id="controls">
+                <button onclick="zoomIn()">+</button>
+                <button onclick="zoomOut()">-</button>
+            </div>
+        </div>
+    
+        <div id="haritaWrapper">
+            <div id="harita">
 
     <svg baseprofile="tiny" fill="#6f9c76" height="422" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5" version="1.2" viewbox="0 0 1000 422" width="1000" xmlns="http://www.w3.org/2000/svg">
         <g id="features">
@@ -482,51 +536,94 @@ Bir il seçiniz
 
 <script>
 
-    let iller=document.querySelectorAll("path");
+ /* =========================
+   İL SEÇME + WIKIPEDIA
+========================= */
 
-iller.forEach(function(il){
+window.addEventListener("load", () => {
 
-il.addEventListener("click",async function(){
+    let iller = document.querySelectorAll("path");
 
-iller.forEach(i=>i.classList.remove("selected"));
+    iller.forEach(function(il){
 
-this.classList.add("selected");
+        il.addEventListener("click", async function(){
 
-let ilAdi=this.id;
+            iller.forEach(i=>i.classList.remove("selected"));
+            this.classList.add("selected");
 
-document.getElementById("bilgi").innerHTML = `
-<span class="loading">
-  <span>•</span><span>•</span><span>•</span>
-</span>
-`;
+            let ilAdi = this.id;
 
-let url="https://tr.wikipedia.org/api/rest_v1/page/summary/"+ilAdi;
+            document.getElementById("loading").style.display="block";
+            document.getElementById("bilgi").innerHTML="";
 
-try{
+            try{
+                let response = await fetch(
+                "https://tr.wikipedia.org/api/rest_v1/page/summary/" + ilAdi
+                );
 
-let response=await fetch(url);
-let data=await response.json();
+                let data = await response.json();
 
-document.getElementById("bilgi").innerHTML=`
+                document.getElementById("loading").style.display="none";
 
-<h3>${ilAdi}</h3>
+                document.getElementById("bilgi").innerHTML = `
+                <h3>${ilAdi}</h3>
+                <p>${data.extract}</p>
+                `;
+            }
+            catch{
+                document.getElementById("loading").style.display="none";
+                document.getElementById("bilgi").innerHTML="Bilgi alınamadı.";
+            }
 
-<p>${data.extract}</p>
+        });
 
-`;
-
-}
-
-catch{
-
-document.getElementById("bilgi").innerHTML="Bilgi alınamadı.";
-
-}
+    });
 
 });
 
-});
+/* =========================
+   ZOOM SİSTEMİ
+========================= */
 
+let zoomLevels = [1000000, 900000, 800000, 700000, 600000, 500000, 400000, 300000, 200000, 100000];
+
+let currentIndex = 0;
+
+const harita = document.getElementById("harita");
+
+function updateMap(){
+
+    // base scale = 1.000.000
+    let base = 1000000;
+
+    let currentScale = zoomLevels[currentIndex];
+
+    let zoom = base / currentScale;
+
+    harita.style.transform = `scale(${zoom})`;
+
+    document.getElementById("scale").innerText =
+    "1 / " + currentScale.toLocaleString("tr-TR");
+}
+
+function zoomIn(){
+
+    if(currentIndex < zoomLevels.length - 1){
+        currentIndex++;
+        console.log("Zoom index:", currentIndex); 
+        updateMap();
+    }
+
+}
+
+function zoomOut(){
+
+    if(currentIndex > 0){
+        currentIndex--;
+        updateMap();
+    }
+
+}
 </script>
 
 </body>
