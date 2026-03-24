@@ -16,6 +16,12 @@ h2{
     position:relative;
     z-index:999;
 }
+#mapArea {
+    display:flex;
+    flex-direction:column; 
+    align-items:center;
+}
+
 /* layout */
 
 #container{
@@ -137,7 +143,7 @@ z-index:999;
 #mapContainer{
     position:relative;
     width:900px;
-    height:550px;      /* SABİT /*
+    height:500px;      /* SABİT /*
     margin:auto;     
     border:2px black;   /* ÇERÇEVE FIX */
     overflow: hidden;
@@ -180,11 +186,11 @@ Bir il seçiniz
 </div>
 
 </div>
-<
 <!-- HARİTA -->
-    
+<div id="mapArea">
+<h2>Türkiye Haritası</h2>
        <div id="mapContainer">
-     <h2>Türkiye Haritası</h2>
+     
         <div id="ui">
             <div id="scale">1 / 1.000.000</div>
     
