@@ -549,7 +549,7 @@ Bir il seçiniz
 
 <script>
 
- /* =========================
+/* =========================
    İL SEÇME + WIKIPEDIA
 ========================= */
 
@@ -571,7 +571,7 @@ window.addEventListener("load", () => {
 
             try{
                 let response = await fetch(
-                "https://tr.wikipedia.org/api/rest_v1/page/summary/" + ilAdi
+                    "https://tr.wikipedia.org/api/rest_v1/page/summary/" + ilAdi
                 );
 
                 let data = await response.json();
@@ -579,8 +579,8 @@ window.addEventListener("load", () => {
                 document.getElementById("loading").style.display="none";
 
                 document.getElementById("bilgi").innerHTML = `
-                <h3>${ilAdi}</h3>
-                <p>${data.extract}</p>
+                    <h3>${ilAdi}</h3>
+                    <p>${data.extract}</p>
                 `;
             }
             catch{
@@ -594,49 +594,113 @@ window.addEventListener("load", () => {
 
 });
 
+
 /* =========================
-   ZOOM SİSTEMİ
+   ZOOM SİSTEMİ (BUTON + SCROLL)
 ========================= */
 
-let zoomLevels = [1000000, 900000, 800000, 700000, 600000, 500000, 400000, 300000, 200000, 100000];
+// + / - kademeli zoom için
+let stepIndex = 0;
 
-let currentIndex = 0;
+// zoomLevels (1/1.000.000 -> 1/100.000)
+let zoomLevels = [
+    1000000, 900000, 800000, 700000, 600000,
+    500000, 400000, 300000, 200000, 100000
+];
 
 const harita = document.getElementById("harita");
 
-function updateMap(){
+// DRAG (sonraki aşama için placeholder)
+let translateX = 0;
+let translateY = 0;
 
-    // base scale = 1.000.000
-    let base = 1000000;
+/* =========================
+   ORTAK TRANSFORM
+========================= */
 
-    let currentScale = zoomLevels[currentIndex];
-
-    let zoom = (base / currentScale) ;
-
-    harita.style.transform = `scale(${zoom})`;
-
-    document.getElementById("scale").innerText =
-    "1 / " + currentScale.toLocaleString("tr-TR");
+function applyTransform(){
+    const base = 1000000;
+    const stepScale = base / zoomLevels[stepIndex];
+    harita.style.transform = `translate(${translateX}px, ${translateY}px) scale(${stepScale})`;
+    updateScale(stepScale);
 }
 
+/* =========================
+   BUTON ZOOM
+========================= */
+
 function zoomIn(){
-
-    if(currentIndex < zoomLevels.length - 1){
-        currentIndex++;
-       console.log("Index:", currentIndex, "Scale:", zoomLevels[currentIndex]); 
-        updateMap();
+    if(stepIndex < zoomLevels.length - 1){
+        stepIndex++;
+        applyTransform();
     }
-
 }
 
 function zoomOut(){
-
-    if(currentIndex > 0){
-        currentIndex--;
-        updateMap();
+    if(stepIndex > 0){
+        stepIndex--;
+        applyTransform();
     }
-
 }
+
+/* =========================
+   SCROLL ZOOM (STEP BASED)
+========================= */
+
+const mapContainer = document.getElementById("mapContainer");
+
+mapContainer.addEventListener("wheel", (e) => {
+    e.preventDefault();
+
+    if(e.deltaY < 0){
+        // scroll yukarı = zoom in
+        if(stepIndex < zoomLevels.length - 1){
+            stepIndex++;
+            applyTransform();
+        }
+    } else {
+        // scroll aşağı = zoom out
+        if(stepIndex > 0){
+            stepIndex--;
+            applyTransform();
+        }
+    }
+});
+
+/* =========================
+   SCALE GÜNCELLEME
+========================= */
+
+function updateScale(stepScale){
+    const base = 1000000;
+    const currentScale = Math.round(base / stepScale);
+    document.getElementById("scale").innerText =
+        "1 / " + currentScale.toLocaleString("tr-TR");
+}
+/* =========================
+   MOUSE DRAG / PAN
+========================= */
+let isDragging = false ; 
+let startX , startY ; 
+
+harita.addEventlistener("mousedown" , (e) => {
+    isDragging = True ; 
+    startX = e.clientX - translateX ; 
+    startY = e.clientY - translateY ; 
+    harita.style.cursor = "grabbing"; 
+});
+document.addEventListener("mousemove" , (e) => {
+    if (!isDragging) return ;  
+    translateX = e.clientX - startX ; 
+    translateY = e.clientY - startY ;
+    apllyTransform(); 
+});
+document.addEventListener("mouseup" , () => {
+    isDragging = false ;
+    harita.style.cursor = "grab"; 
+});
+//başlangıçta imleç grab // 
+harita.style.cursor = "grab";
 </script>
 
 </body>
