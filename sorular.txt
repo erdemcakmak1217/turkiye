@@ -1,0 +1,5 @@
+1-) Seçilen il hangi bölgededir?
+2-) Seçilen ilin nüfusu nedir?
+3-) Seçieln ilin meşhur yemekleri nelerdir?
+4-) Seçilen il nesiyle meşhurdur?
+5-) Seçilen ilin plaka kodu nedir?

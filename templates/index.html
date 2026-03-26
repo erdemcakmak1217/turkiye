@@ -1,173 +1,14 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <meta charset="UTF-8" />
 
-<head>
-
-<meta charset="UTF-8">
-<title>Türkiye Haritası</title>
-
-<style>
-
-body{
-font-family:Arial;
-text-align:center;
-}
-h2{
-    position:relative;
-    z-index:999;
-}
-#mapArea {
-    display:flex;
-    flex-direction:column; 
-    align-items:center;
-}
-
-/* layout */
-
-#container{
-display:flex;
-justify-content:center;
-gap:40px;
-align-items:flex-start;
-}
-
-/* sol panel */
-
-#panel{
-width:300px;
-padding:15px;
-text-align:left;
-min-height:200px;
-}
-
-/* HARİTA KUTUSU */
-
-#mapContainer{
-position:relative;
-width:900px;
-overflow:hidden;
-z-index:1;
-}
-
-/* svg */
-
-svg{
-width:900px;
-}
-
-/* iller */
-
-path{
-fill:#d9d9d9;
-stroke:white;
-stroke-width:1;
-cursor:pointer;
-transition:0.2s;
-transform-box: fill-box;
-transform-origin: center;
-}
-
-/* hover */
-
-path:hover{
-fill:aqua;
-}
-
-/* seçilen */
-
-.selected{
-fill:red !important;
-animation: buyu 0.4s ease;
-filter: drop-shadow(0px 0px 4px black);
-}
-
-@keyframes buyu{
-0%{transform:scale(1);}
-50%{transform:scale(1.05);}
-100%{transform:scale(1);}
-}
-
-/* loading */
-
-#loading{
-display:none;
-font-size:40px;
-letter-spacing:8px;
-}
-
-.dot{
-animation: blink 1.4s infinite;
-}
-
-.dot:nth-child(2){animation-delay:0.2s;}
-.dot:nth-child(3){animation-delay:0.4s;}
-
-@keyframes blink{
-0%{opacity:0.2;}
-50%{opacity:1;}
-100%{opacity:0.2;}
-}
-
-/* zoom butonları */
-
-#controls{
-position:absolute;
-right:10px;
-bottom:10px;
-display:flex;
-flex-direction:column;
-gap:2px;
-
-z-index:999;
-}
-
-#controls button{
-width:30px;
-height:30px;
-font-size:20px;
-cursor:pointer;
-}
-
-/* ölçek */
-
-#scale{
-position:absolute;
-left:10px;
-bottom:10px;
-background:white;
-padding:5px 10px;
-font-size:14px;
-
-z-index:999;
-}
-#mapContainer{
-    position:relative;
-    width:900px;
-    height:500px;      /* SABİT /*
-    margin:auto;     
-    border:2px black;   /* ÇERÇEVE FIX */
-    overflow: hidden;
-}
-
-#harita{
-    width:100%;
-    height:100%;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    transform-origin:center;
-    transition: transform 0.3s ease;
-}
-#harita{
-    transform-origin: top left;
-}
-
-   
-</style>
-
-</head>
-
-<body>
+        <title>Türkiye'yi Tanıyorum :)</title>
+        
+        <link rel="stylesheet" href="../static/css/main.css" />
+    </head>
+    
+    <body>
 
 <div id="container">
 
@@ -571,23 +412,22 @@ window.addEventListener("load", () => {
             document.getElementById("loading").style.display="block";
             document.getElementById("bilgi").innerHTML="";
 
-            try{
-                let response = await fetch(
-                    "https://tr.wikipedia.org/api/rest_v1/page/summary/" + ilAdi
-                );
+            try {
+            const response = await fetch("/il-bilgi", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ il: ilAdi })
+            });
 
-                let data = await response.json();
+            const data = await response.json();
 
-                document.getElementById("loading").style.display="none";
+            bilgiDiv.innerHTML = data.cevap;
 
-                document.getElementById("bilgi").innerHTML = `
-                    <h3>${ilAdi}</h3>
-                    <p>${data.extract}</p>
-                `;
-            }
-            catch{
-                document.getElementById("bilgi").innerHTML="Bilgi alınamadı.";
-            }
+        } catch (error) {
+            bilgiDiv.innerHTML = "Hata oluştu!";
+        }
 
         });
 
@@ -782,6 +622,48 @@ function updateScale(scale){
     document.getElementById("scale").innerText =
     "1 / " + currentScale.toLocaleString("tr-TR");
 }
+</script>
+
+<script>
+
+const iller = document.querySelectorAll("path");
+const bilgiDiv = document.getElementById("bilgi");
+const loading = document.getElementById("loading");
+
+iller.forEach(il => {
+    il.addEventListener("click", async () => {
+
+        // seçili efekti
+        document.querySelectorAll("path").forEach(p => p.classList.remove("selected"));
+        il.classList.add("selected");
+
+        const ilAdi = il.getAttribute("name");
+
+        // loading göster
+        bilgiDiv.innerHTML = "";
+        loading.style.display = "block";
+
+        try {
+            const response = await fetch("/il-bilgi", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ il: ilAdi })
+            });
+
+            const data = await response.json();
+
+            bilgiDiv.innerHTML = data.cevap;
+
+        } catch (error) {
+            bilgiDiv.innerHTML = "Hata oluştu!";
+        }
+
+        loading.style.display = "none";
+    });
+});
+
 </script>
 
 </body>
