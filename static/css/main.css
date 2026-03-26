@@ -128,7 +128,12 @@ path:hover{
     transform-origin:center;
     transition: transform 0.3s ease;
 }
-
 #harita{
-    transform-origin: top center;
+    transform-origin: top left;
+}
+#harita {
+    pointer-events: none;
+}
+path {
+    pointer-events: all;
 }

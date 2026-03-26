@@ -579,36 +579,79 @@ mapContainer.addEventListener("wheel", (e) => {
 
 
 /* =========================
-   MOUSE DRAG (PAN)
+   DRAG + INERTIA (FIX)
 ========================= */
 
-let isDragging = false;
-let startX, startY;
+harita.style.cursor = "grab";
 
-harita.addEventListener("mousedown", (e) => {
+harita.addEventListener("mousedown", e => {
     isDragging = true;
     startX = e.clientX - translateX;
     startY = e.clientY - translateY;
+
+    lastX = e.clientX;
+    lastY = e.clientY;
+    lastTime = Date.now();
+
+    velocityX = 0;
+    velocityY = 0;
+
     harita.style.cursor = "grabbing";
 });
-
-document.addEventListener("mousemove", (e) => {
+document.addEventListener("mousemove", e => {
     if(!isDragging) return;
 
     translateX = e.clientX - startX;
     translateY = e.clientY - startY;
 
+    const now = Date.now();
+    const dt = now - lastTime;
+
+    velocityX = (e.clientX - lastX) / dt;
+    velocityY = (e.clientY - lastY) / dt;
+
+    lastX = e.clientX;
+    lastY = e.clientY;
+    lastTime = now;
+
     applyTransform();
 });
-
 document.addEventListener("mouseup", () => {
+    if(!isDragging) return;
     isDragging = false;
     harita.style.cursor = "grab";
+
+    startInertia();
 });
 
-harita.style.cursor = "grab";
+/* =========================
+   INERTIA
+========================= */
+function startInertia(){
+    let friction = 0.99; // sürtünme
+    let minVelocity = 0.8; // durma eşiği
 
+    function animate(){
+        velocityX *= friction;
+        velocityY *= friction;
 
+        if(Math.abs(velocityX) < minVelocity) velocityX = 0;
+        if(Math.abs(velocityY) < minVelocity) velocityY = 0;
+
+        translateX += velocityX * 15;
+        translateY += velocityY * 15;
+
+        applyTransform();
+
+        if(Math.abs(velocityX) > 0 || Math.abs(velocityY) > 0){
+            requestAnimationFrame(animate);
+        }
+    }
+
+    requestAnimationFrame(animate);
+}
+
+  
 /* =========================
    SCALE
 ========================= */
@@ -663,6 +706,7 @@ iller.forEach(il => {
         loading.style.display = "none";
     });
 });
+
 
 </script>
 
