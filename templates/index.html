@@ -597,51 +597,6 @@ window.addEventListener("load", () => {
 
 
 /* =========================
-   İL SEÇME + WIKIPEDIA
-========================= */
-
-window.addEventListener("load", () => {
-
-    let iller = document.querySelectorAll("path");
-
-    iller.forEach(function(il){
-
-        il.addEventListener("click", async function(){
-
-            iller.forEach(i=>i.classList.remove("selected"));
-            this.classList.add("selected");
-
-            let ilAdi = this.id;
-
-            document.getElementById("loading").style.display="block";
-            document.getElementById("bilgi").innerHTML="";
-
-            try{
-                let response = await fetch(
-                    "https://tr.wikipedia.org/api/rest_v1/page/summary/" + ilAdi
-                );
-
-                let data = await response.json();
-
-                document.getElementById("loading").style.display="none";
-
-                document.getElementById("bilgi").innerHTML = `
-                    <h3>${ilAdi}</h3>
-                    <p>${data.extract}</p>
-                `;
-            }
-            catch{
-                document.getElementById("bilgi").innerHTML="Bilgi alınamadı.";
-            }
-
-        });
-
-    });
-
-});
-
-
-/* =========================
    ZOOM + PAN SİSTEMİ
 ========================= */
 
