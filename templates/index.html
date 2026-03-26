@@ -579,7 +579,7 @@ mapContainer.addEventListener("wheel", (e) => {
 
 
 /* =========================
-   DRAG + INERTIA (FIX)
+   DRAG 
 ========================= */
 
 harita.style.cursor = "grab";
@@ -628,8 +628,8 @@ document.addEventListener("mouseup", () => {
    INERTIA
 ========================= */
 function startInertia(){
-    let friction = 0.99; // sürtünme
-    let minVelocity = 0.8; // durma eşiği
+    let friction = 0.98; // sürtünme
+    let minVelocity = 0.05; // durma eşiği
 
     function animate(){
         velocityX *= friction;
@@ -638,8 +638,8 @@ function startInertia(){
         if(Math.abs(velocityX) < minVelocity) velocityX = 0;
         if(Math.abs(velocityY) < minVelocity) velocityY = 0;
 
-        translateX += velocityX * 15;
-        translateY += velocityY * 15;
+        translateX += velocityX * 5;
+        translateY += velocityY * 5;
 
         applyTransform();
 
