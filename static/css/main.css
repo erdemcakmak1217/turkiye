@@ -137,3 +137,26 @@ path:hover{
 path {
     pointer-events: all;
 }
+#videoContainer {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    margin-top: 10px;
+    padding-bottom: 10px;
+}
+
+.videoCard {
+    width: 200px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.videoCard img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.videoCard p {
+    font-size: 12px;
+    margin: 5px 0 0 0;
+}
