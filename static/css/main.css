@@ -139,24 +139,25 @@ path {
 }
 #videoContainer {
     display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    margin-top: 10px;
-    padding-bottom: 10px;
+    justify-content: center; /* ortalar */
+    gap: 10px;               /* aralarındaki boşluk */
+    margin-top: 20px;        /* haritadan boşluk bırak */
+    overflow-x: auto;        /* çok fazla video olursa kaydır */
 }
 
 .videoCard {
-    width: 200px;
-    cursor: pointer;
-    flex-shrink: 0;
+    flex-shrink: 0;          /* küçülmesini engeller */
+    width: 200px;            /* video genişliği */
 }
 
-.videoCard img {
+.videoCard iframe {
     width: 100%;
+    height: 120px;
     border-radius: 8px;
 }
 
 .videoCard p {
     font-size: 12px;
     margin: 5px 0 0 0;
+    text-align: center;
 }
