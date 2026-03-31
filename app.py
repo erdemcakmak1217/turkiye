@@ -22,7 +22,7 @@ def il_bilgi():
     # OpenAI prompt
     prompt = f"""
     {il} Hangi bölgededir? Nüfusu nedir?
-    Meşhur yemekleri nelerdir? Nesiyle meşhurdur? Plaka kodu nedir?
+    Meşhur yemekleri nelerdir? Nesiyle meşhurdur? Plaka kodu nedir? 
 
     Kısa cevap ver.
     Format:

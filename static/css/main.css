@@ -138,26 +138,24 @@ path {
     pointer-events: all;
 }
 #videoContainer {
-    display: flex;
-    justify-content: center; /* ortalar */
-    gap: 10px;               /* aralarındaki boşluk */
-    margin-top: 20px;        /* haritadan boşluk bırak */
-    overflow-x: auto;        /* çok fazla video olursa kaydır */
+    display: flex;           
+    justify-content: center; 
+    overflow:auto; 
+    gap: 10px;               
+    margin: 30px auto;       
+    width: 100%;
 }
 
 .videoCard {
-    flex-shrink: 0;          /* küçülmesini engeller */
-    width: 200px;            /* video genişliği */
+    width: 250px;          
+    display: flex;
+    flex-direction: column;   
+    align-items:center;    
 }
 
 .videoCard iframe {
     width: 100%;
-    height: 120px;
-    border-radius: 8px;
-}
-
-.videoCard p {
-    font-size: 12px;
-    margin: 5px 0 0 0;
-    text-align: center;
+    height: 170px;
+    display: block;          
+    border-radius: 10px;      
 }
