@@ -37,34 +37,80 @@ def il_bilgi():
     gpt_cevap = response.choices[0].message.content
 
     # YouTube API çağrısı
-    query = f"{il} gezi"  # arama terimi
-    url = "https://www.googleapis.com/youtube/v3/search"
-    params = {
+    query = f"{il} gezisi"
+    search_url = "https://www.googleapis.com/youtube/v3/search"
+
+    search_params = {
         "part": "snippet",
         "q": query,
         "type": "video",
         "order": "viewCount",
-        "maxResults": 5,
+        "maxResults": 10,  # biraz fazla çekiyoruz filtre için
         "relevanceLanguage": "tr",
         "key": YOUTUBE_API_KEY
     }
-    yt_res = requests.get(url, params=params)
+
+    yt_res = requests.get(search_url, params=search_params)
     yt_data = yt_res.json()
 
-    # Videoları filtrele
+    # video id'leri al
+    video_ids = []
+    for item in yt_data.get("items", []):
+        if item["id"].get("videoId"):
+            video_ids.append(item["id"]["videoId"])
+
+    # video detaylarını al (SÜRE İÇİN)
+    details_url = "https://www.googleapis.com/youtube/v3/videos"
+    details_params = {
+        "part": "contentDetails,status",
+        "id": ",".join(video_ids),
+        "key": YOUTUBE_API_KEY
+    }
+
+    details_res = requests.get(details_url, params=details_params)
+    details_data = details_res.json()
+
+    # süre filtresi (min 5 dakika)
+    import re
+
+    valid_ids = []
+
+    for item in details_data.get("items", []):
+
+        if "contentDetails" not in item:
+            continue
+        
+        if not item.get("status", {}).get("embeddable", False):
+            continue
+        
+        duration = item["contentDetails"]["duration"]
+
+        match = re.search(r'PT(\d+)M', duration)
+
+        if match:
+            minutes = int(match.group(1))
+            if minutes >= 5:
+                valid_ids.append(item["id"])
+
+    # final video listesi
     videos = []
+
     for item in yt_data.get("items", []):
         video_id = item["id"]["videoId"]
-        title = item["snippet"]["title"]
-        thumb = item["snippet"]["thumbnails"]["medium"]["url"]
-        videos.append({
-            "videoId": video_id,
-            "title": title,
-            "thumb": thumb,
-            "url": f"https://www.youtube.com/watch?v={video_id}"
-        })
 
-    return jsonify({"cevap": gpt_cevap, "videolar": videos})
+        if video_id in valid_ids:
+            videos.append({
+                "videoId": video_id,
+                "title": item["snippet"]["title"],
+                "thumb": item["snippet"]["thumbnails"]["medium"]["url"],
+                "url": f"https://www.youtube.com/watch?v={video_id}"
+            })
+
+    # max 5 video
+    videos = videos[:5]
+
+   
+    return jsonify({ "cevap": gpt_cevap, "videolar":videos})
 
 if __name__ == "__main__":
     app.run(debug=True)
