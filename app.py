@@ -7,7 +7,6 @@ app = Flask(__name__)
 
 # OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-# YouTube API key
 YOUTUBE_API_KEY =(os.getenv("YOUTUBE_API_KEY"))  # Buraya kendi API key'inizi environment variable olarak ekleyin
 
 @app.route("/")
