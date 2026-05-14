@@ -65,18 +65,39 @@ path:hover{
     100%{transform:scale(1);}
 }
 
-#loading{
-    display:none;
-    font-size:40px;
-    letter-spacing:8px;
+#loading {
+    display: none;
+    font-size: 40px;
+    letter-spacing: 8px;
 }
 
-.dot{
+#loading.active {
+    display: block;
+}
+
+#loading .dot {
+    display: none;
+}
+
+#loading.active .dot {
+    display: inline-block;
+}
+
+/* animasyon */
+.dot {
     animation: blink 1.4s infinite;
 }
 
-.dot:nth-child(2){animation-delay:0.2s;}
-.dot:nth-child(3){animation-delay:0.4s;}
+/* gecikmeler */
+.dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+
 
 @keyframes blink{
     0%{opacity:0.2;}
