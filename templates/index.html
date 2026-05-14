@@ -28,8 +28,6 @@
 
 <div id="mapArea">
     <h2>Türkiye Haritası</h2>
-<<<<<<< HEAD
-=======
     
 <div id ="toolbar">
    
@@ -53,8 +51,6 @@
 
 </div>
 
-
->>>>>>> d23cba7... ec_130526
     <div id="mapContainer">
         <div id="ui">
             <div id="scale">1 / 1.000.000</div>
@@ -414,11 +410,7 @@
 
 <script>
 
-   
-    /* =========================
-   İL SEÇME + WIKIPEDIA
-========================= */
-
+      
 window.addEventListener("load", () => {
 
     let iller = document.querySelectorAll("path");
@@ -740,8 +732,9 @@ function updateScale(scale){
     iller.forEach(il => {
         il.addEventListener("click", async () => {
 
-             if(currentMode) return;
-    
+            if(currentMode !== null){
+                return;
+            }
             // Seçili efekti
             document.querySelectorAll("path").forEach(p => p.classList.remove("selected"));
             il.classList.add("selected");
@@ -790,19 +783,14 @@ function updateScale(scale){
     
             loading.style.display = "none";
 
-            
-            
         });
     });
-<<<<<<< HEAD
-=======
 
    let currentMode = null;
    let cityStates = JSON.parse(localStorage.getItem("cityStates")) || {};
 
     const toolButtons = document.querySelectorAll(".toolBtn");
 
-// TOOLBAR
     toolButtons.forEach(btn => {
     btn.addEventListener("click", () => {
 
@@ -820,10 +808,8 @@ iller.forEach(il => {
 
     const ilAdi = il.getAttribute("name");
 
-    // sayfa açılınca state uygula
     applyCityColor(il, cityStates[ilAdi]);
 
-    // SOL TIK → ekle/değiştir
     il.addEventListener("click", () => {
 
         if (!currentMode) return;
@@ -833,7 +819,6 @@ iller.forEach(il => {
         saveAndRender(il, ilAdi);
     });
 
-    // SAĞ TIK → sil
     il.addEventListener("contextmenu", (e) => {
         e.preventDefault();
 
@@ -861,7 +846,7 @@ iller.forEach(il => {
 
 }
 
->>>>>>> d23cba7... ec_130526
+
 </script>
 </body>
 </html>
