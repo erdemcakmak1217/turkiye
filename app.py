@@ -1,13 +1,17 @@
 from flask import Flask, render_template, request, jsonify
 from openai import OpenAI
+from dotenv import load_dotenv
 import os
 import requests
+
+
+load_dotenv()
 
 app = Flask(__name__)
 
 # OpenAI client
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
+client = OpenAI(api_key="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")
+YOUTUBE_API_KEY = "AIzaSyB5FgWCqwAqN6jpA_q64zuC_DMkGwbG7K0"
 
 @app.route("/")
 def index():
@@ -46,7 +50,7 @@ def il_bilgi():
         "order": "viewCount",
         "maxResults": 10,  # biraz fazla çekiyoruz filtre için
         "relevanceLanguage": "tr",
-        "key": "AIzaSyB5FgWCqwAqN6jpA_q64zuC_DMkGwbG7K0"
+        "key": YOUTUBE_API_KEY
     }
 
     yt_res = requests.get(search_url, params=search_params)
