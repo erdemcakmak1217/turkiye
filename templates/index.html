@@ -732,9 +732,6 @@ function updateScale(scale){
     iller.forEach(il => {
         il.addEventListener("click", async () => {
 
-            if(currentMode !== null){
-                return;
-            }
             // Seçili efekti
             document.querySelectorAll("path").forEach(p => p.classList.remove("selected"));
             il.classList.add("selected");
@@ -845,7 +842,6 @@ iller.forEach(il => {
     applyCityColor(il, cityStates[ilAdi]);
 
 }
-
 
 </script>
 </body>

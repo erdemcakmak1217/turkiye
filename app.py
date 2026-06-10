@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 # OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-YOUTUBE_API_KEY =(os.getenv("YOUTUBE_API_KEY"))  # Buraya kendi API key'inizi environment variable olarak ekleyin
+YOUTUBE_API_KEY =(os.getenv("YOUTUBE_API_KEY")) 
 
 @app.route("/")
 def index():
