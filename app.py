@@ -14,8 +14,8 @@ app = Flask(__name__)
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 YOUTUBE_API_KEY =(os.getenv("YOUTUBE_API_KEY")) 
 =======
-client = OpenAI(api_key="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")
-YOUTUBE_API_KEY = "AIzaSyB5FgWCqwAqN6jpA_q64zuC_DMkGwbG7K0"
+client = OpenAI(api_key="----")
+YOUTUBE_API_KEY = "---"
 >>>>>>> 19500b83811e9c734bdd95f300c863e9e18802f9
 
 @app.route("/")
